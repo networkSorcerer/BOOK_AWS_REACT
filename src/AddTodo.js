@@ -1,4 +1,3 @@
-import { Height } from "@mui/icons-material";
 import { Button, Grid, TextField } from "@mui/material";
 import React, { useState } from "react";
 
@@ -13,10 +12,9 @@ const AddTodo = (props) => {
     }
     const onInputChange = (e) => {
         setItems({title: e.target.value});
-        console.log(item);
     }
     const enterKeyEventHandler =(e)=> {
-        if(e.key == 'Enter') {
+        if(e.key === 'Enter') {
             onButtonClick();
         }
     }
