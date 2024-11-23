@@ -1,83 +1,93 @@
-import { useEffect, useState } from 'react';
-import './App.css';
-import Todo from './Todo';
-import { Container, List, Paper } from '@mui/material';
-import AddTodo from './AddTodo';
-import { call } from './service/ApiService';
+import { useEffect, useState } from "react";
+import "./App.css";
+import Todo from "./Todo";
+import {
+  Container,
+  List,
+  Paper,
+  Grid,
+  Button,
+  AppBar,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import AddTodo from "./AddTodo";
+import { call, signout } from "./service/ApiService";
 
 function App() {
-const [items, setItems] = useState([]);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    // API 호출 후 로딩 상태 변경
+    call("/todo", "GET", null)
+      .then((response) => setItems(response.data))
+      .finally(() => setLoading(false)); // 비동기 처리 완료 후 로딩 상태 변경
+  }, []);
 
-// useEffect(() => {
-//   const requestOptions = {
-//   method: "GET",
-//   Headers : {
-//     "Content-type" : "application/json"
-//   },
-// }
-// fetch("http://localhost:8080/todo",requestOptions)
-// .then((response) => response.json())
-// .then((response) => {
-//   setItems(response.data);
-// },
-// (error) =>{}
-// )
-// },[items]);
+  const addItem = (item) => {
+    call("/todo", "POST", item).then((response) => setItems(response.data));
+  };
 
-// const deleteItem = (item) => {
-//   //삭제할 아이템을 찾는다
-//   const newItems = items.filter(e=> e.id != item.id);
-//   //삭제할 아이템을 제외한 아이템을 다시 배열에 저장한다
-//   setItems([...newItems]);
-// }
+  const deleteItem = (item) => {
+    call("/todo", "DELETE", item).then((response) => setItems(response.data));
+  };
 
-// const editItem = (item) =>{
-//   call =("/todo", "PUT", item)
-//   .then((response)=>
-//   setItems([...items]));
-// }
+  const editItem = (item) => {
+    call("/todo", "PUT", item).then((response) => setItems(response.data));
+  };
 
-// const addItem = (item) => {
-//   item.id = "ID-" + items.length;
-//   item.done = false;
-//   setItems([...items, item]);
-//   console.log("items : ", items);
-// }
+  // Todo 리스트 렌더링
+  let todoItems = items.length > 0 && (
+    <Paper style={{ margin: 16 }}>
+      <List>
+        {items.map((item) => (
+          <Todo
+            item={item}
+            key={item.id}
+            editItem={editItem}
+            deleteItem={deleteItem}
+          />
+        ))}
+      </List>
+    </Paper>
+  );
 
-useEffect(()=>{
-  call("/todo","GET", null).then((response)=> setItems(response.data));
-},[]);
+  // 네비게이션 바
+  let navigationBar = (
+    <AppBar position="static">
+      <Toolbar>
+        <Grid justifyContent="space-between" container>
+          <Grid item>
+            <Typography variant="h6">오늘의 할일</Typography>
+          </Grid>
+          <Grid item>
+            <Button color="inherit" onClick={signout}>
+              로그아웃
+            </Button>
+          </Grid>
+        </Grid>
+      </Toolbar>
+    </AppBar>
+  );
 
-const addItem =(item)=>{
-  call("/todo", "POST", item).then((response) => setItems(response.data));
-}
-
-const deleteItem = (item) => {
-  call("/todo","DELETE", item).then((response) => setItems(response.data));
-}
-
-const editItem =(item)=>{
-  call("/todo","PUT", item).then((response)=>setItems(response.data));
-}
-  let todoItems = 
-    items.length > 0 && (
-      <Paper style={{margin: 16}}>
-        <List>
-          {items.map((item) => (
-            <Todo item={item} key={item.id} editItem={editItem} deleteItem={deleteItem}/>))}
-        </List>
-      </Paper>
-      );
-
-  return (
-    <div className="App">
+  // Todo 리스트 페이지
+  let todoListPage = (
+    <div>
+      {navigationBar}
       <Container maxWidth="md">
-        <AddTodo addItem={addItem}/>
+        <AddTodo addItem={addItem} />
+        <div className="TodoList">{todoItems}</div>
       </Container>
-      <div className='TodoList'>{todoItems}</div>
     </div>
   );
+
+  // 로딩 중 페이지
+  let loadingPage = <h1>로딩중...</h1>;
+  let content = loading ? loadingPage : todoListPage;
+
+  // 선택한 content 렌더링
+  return <div className="App">{content}</div>;
 }
 
 export default App;
