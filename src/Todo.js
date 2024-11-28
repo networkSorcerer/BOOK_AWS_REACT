@@ -34,10 +34,8 @@ const Todo = (props) => {
   };
 
   const CheckboxEventHandler = (e) => {
-    // 상태를 직접 변경하지 않고, setItem을 사용하여 업데이트
-    const updatedItem = { ...item, done: e.target.checked };
-    setItem(updatedItem); // 상태 업데이트
-    editItem(updatedItem); // 부모 컴포넌트로 변경된 상태 전달
+    item.don = e.target.checked;
+    editItem(item);
   };
   return (
     <ListItem>

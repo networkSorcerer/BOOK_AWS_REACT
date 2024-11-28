@@ -12,7 +12,8 @@ function SignUp() {
     const password = data.get("password");
     signup({ username: username, password: password }).then((response) => {
       //계정 생성 성공시 login 페이지로 리디렉트
-      window.location.href = "/login";
+      //window.location.href = "/login";
+      alert("회원가입 성공!!!!!");
     });
   };
 

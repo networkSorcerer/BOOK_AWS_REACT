@@ -21,7 +21,10 @@ function App() {
   useEffect(() => {
     // API 호출 후 로딩 상태 변경
     call("/todo", "GET", null)
-      .then((response) => setItems(response.data))
+      .then((response) => {
+        console.log(response); // 응답 객체 로그 출력
+        setItems(response.data || response); // 응답 형식에 맞게 처리
+      })
       .finally(() => setLoading(false)); // 비동기 처리 완료 후 로딩 상태 변경
   }, []);
 
